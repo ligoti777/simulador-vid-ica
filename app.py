@@ -50,7 +50,7 @@ st.markdown('<p class="sub-header">Herramienta de precisión para el manejo fisi
 st.markdown("""
     <div class="author-box">
         <strong>Autoría y Validación Técnica:</strong><br>
-        • <strong>Lisandro Godoy Tito ("Ligotti" / "Liti" / "Bigote")</strong><br>
+        • <strong>Lisandro Godoy Tito ("Ligotti")</strong><br>
         • <strong>Grado:</strong> Bachiller en Ciencias Agrícolas<br>
         • <strong>Ámbito de Aplicación:</strong> Manejo termofisiológico y mitigación de estrés abiótico en uva de mesa (Valle de Ica / San José de los Molinos).
     </div>
