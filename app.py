@@ -191,4 +191,4 @@ with st.expander("📚 Fundamento Científico y Bibliografía de Respaldo"):
 
 # Pie de página
 st.markdown("---")
-st.markdown("<p style='text-align: center; color: gray;'>Desarrollado para la gestión agrometeorológica avanzada en Ica | Autor: Lisandro Godoy Tito (Ligotti / Liti / Bigote)</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: gray;'>Desarrollado para la gestión agrometeorológica avanzada en Ica | Autor: Lizandro Godoy Tito (Ligotti)</p>", unsafe_allow_html=True)
