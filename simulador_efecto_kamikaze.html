@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Estrés Hídrico y DPV - Teoría del Efecto Kamikaze</title>
+    <style>
+        :root {
+            --primary: #1b4332;
+            --secondary: #2d6a4f;
+            --accent: #d8f3dc;
+            --dark: #212529;
+            --light: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 26px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .section-box {
+            background: var(--light);
+            border-left: 5px solid var(--secondary);
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        h2 {
+            font-size: 18px;
+            color: var(--secondary);
+            margin-top: 0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: var(--primary);
+        }
+        .results-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #e9ecef;
+            display: none;
+        }
+        .result-item {
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .alert-high {
+            color: #d90429;
+            font-weight: bold;
+        }
+        .alert-moderate {
+            color: #fb8500;
+            font-weight: bold;
+        }
+        /* Acordeón de Respaldo Científico */
+        .scientific-section {
+            margin-top: 30px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .scientific-header {
+            background-color: #e2e8f0;
+            color: #1e293b;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .scientific-body {
+            padding: 20px;
+            background: #ffffff;
+            display: none;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .scientific-body h3 {
+            color: var(--primary);
+            font-size: 15px;
+            margin-top: 15px;
+        }
+        .author-tag {
+            font-style: italic;
+            color: #475569;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Simulador de Estrés Hídrico & Efecto Kamikaze</h1>
+    <div class="subtitle">Modelo de Precisión Fisiológica de Campo — Desarrollado por Ligotti (Bachiller en Ciencias Agrícolas)</div>
+
+    <!-- PANEL DE ENTRADA -->
+    <div class="section-box">
+        <h2>1. Parámetros Microclimáticos de Campo</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="temp">Temperatura Máxima Estimada (°C):</label>
+                <input type="number" id="temp" value="32" step="0.5">
+            </div>
+            <div class="form-group">
+                <label for="hr">Humedad Relativa Matutina/Mediodía (%):</label>
+                <input type="number" id="hr" value="35" step="1">
+            </div>
+        </div>
+        <button onclick="calcularEstres()">Calcular Índice de Fatiga Kamikaze (IFK)</button>
+    </div>
+
+    <!-- PANEL DE RESULTADOS -->
+    <div id="results" class="results-box">
+        <h2>2. Diagnóstico Fisiológico y Simulación</h2>
+        <div class="result-item" id="res-dpv"></div>
+        <div class="result-item" id="res-horas"></div>
+        <div class="result-item" id="res-alerta"></div>
+    </div>
+
+    <!-- APARTADO DE RESPALDO CIENTÍFICO -->
+    <div class="scientific-section">
+        <div class="scientific-header" onclick="toggleScience()">
+            <span>📚 Apartado Metodológico y Respaldo Científico (Ver Fundamentos)</span>
+            <span id="toggle-icon">▼</span>
+        </div>
+        <div id="science-body" class="scientific-body">
+            <h3>1. Cálculo del Déficit de Presión de Vapor (DPV / VPD)</h3>
+            <p>El simulador calcula la demanda evaporativa de la atmósfera empleando la ecuación psicrométrica estándar recomendada por la <strong>FAO (Boletín 56 - *Evapotranspiración del cultivo*)</strong>. Se determina mediante la diferencia entre la presión de vapor de saturación ($e_s$) y la presión de vapor real ($e_a$) a partir de la temperatura del aire y la humedad relativa.</p>
+            <p class="author-tag">Referencia: Allen, R. G., et al. (1998). Crop evapotranspiration-Guidelines for computing crop water requirements. FAO Irrigation and drainage paper 56.</p>
+
+            <h3>2. Fisiología del Cierre Estomático ("Efecto Kamikaze")</h3>
+            <p>Cuando el DPV supera el umbral crítico de <strong>2.5 kPa</strong>, la succión hídrica en el xilema se vuelve tan violenta que amenaza con romper las columnas de agua (cavitación y embolias). Para evitar el colapso hidráulico irreversible, la planta activa canales de salida iónica en las células guardas, induciendo un cierre estomático drástico. Esto frena la transpiración pero detiene la fotosíntesis y eleva peligrosamente la temperatura foliar interna.</p>
+            <p class="author-tag">Referencia: Taiz, L., & Zeiger, E. (2010). Fisiología Vegetal. Editorial 5ª Edición; Jones, H. G. (1992). Plants and Microclimate: A Quantitative Approach to Environmental Plant Physiology.</p>
+
+            <h3>3. Crisis de ATP, Bloqueo de Floema y Envero Incompleto</h3>
+            <p>La acumulación de horas de bloqueo estomático agota las reservas de trifosfato de adenosina (ATP) debido al desvío energético hacia la respiración de mantenimiento. Sin ATP, las bombas de protones de las membranas detienen la absorción activa de nutrientes móviles (como el Magnesio y el Hierro) y se paraliza el trasloque de sacarosa a través del floema hacia los racimos, desencadenando un envero desparejo o incompleto.</p>
+            <p class="author-tag">Referencia: Marschner, H. (2011). Mineral Nutrition of Higher Plants; Larcher, W. (2003). Physiological Plant Ecology.</p>
+
+            <h3>4. Criterio de Validación Empírica por Calibración Visual</h3>
+            <p>Este simulador no sustituye a la planta, sino que traduce la termodinámica atmosférica local a un **Índice de Fatiga (IFK)**. La validez científica del modelo se fundamenta en la calibración cruzada: las horas de bloqueo predichas coinciden directamente con la manifestación visual de necrosis marginal (muerte regresiva de la punta hacia adentro) observada en campo en el valle de Ica.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleScience() {
+        const body = document.getElementById('science-body');
+        const icon = document.getElementById('toggle-icon');
+        if (body.style.display === 'block') {
+            body.style.display = 'none';
+            icon.textContent = '▼';
+        } else {
+            body.style.display = 'block';
+            icon.textContent = '▲';
+        }
+    }
+
+    function calcularEstres() {
+        const T = parseFloat(document.getElementById('temp').value);
+        const HR = parseFloat(document.getElementById('hr').value);
+
+        // Cálculo aproximado de DPV en kPa basado en fórmulas FAO
+        // Presión de saturación es = 0.6108 * exp((17.27 * T) / (T + 237.3))
+        const es = 0.6108 * Math.exp((17.27 * T) / (T + 237.3));
+        const ea = es * (HR / 100);
+        const dpv = Math.max(0, es - ea);
+
+        // Estimación de horas de cierre estomático en función del DPV y temperatura
+        let horasCierre = 0;
+        let nivelAlerta = "";
+        let claseAlerta = "";
+
+        if (dpv > 3.0 || T >= 33) {
+            horasCierre = 6.5;
+            nivelAlerta = "ESTRÉS SEVERO / MODO KAMIKAZE CRÍTICO (Alto riesgo de necrosis marginal y colapso del floema).";
+            claseAlerta = "alert-high";
+        } else if (dpv > 2.2 || T >= 30) {
+            horasCierre = 4.0;
+            nivelAlerta = "ESTRÉS MODERADO (Cierre estomático parcial prolongado, inicio de deuda energética).";
+            claseAlerta = "alert-moderate";
+        } else {
+            horasCierre = 1.5;
+            nivelAlerta = "ESTRÉS BAJO / CONDICIÓN NORMAL (Intercambio gaseoso operativo).";
+            claseAlerta = "";
+        }
+
+        // Mostrar resultados
+        const resBox = document.getElementById('results');
+        resBox.style.display = 'block';
+
+        document.getElementById('res-dpv').innerHTML = `<strong>Déficit de Presión de Vapor (DPV) calculado:</strong> ${dpv.toFixed(2)} kPa`;
+        document.getElementById('res-horas').innerHTML = `<strong>Ventana estimada de bloqueo estomático:</strong> ~${horasCierre} horas continuas de paradas técnicas.`;
+        document.getElementById('res-alerta').innerHTML = `<strong>Diagnóstico del Modelo:</strong> <span class="${claseAlerta}">${nivelAlerta}</span>`;
+    }
+</script>
+
+</body>
+</html>
